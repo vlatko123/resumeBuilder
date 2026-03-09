@@ -29,25 +29,19 @@ export default function TopBar() {
   const { data, setTemplate, setModernColor, importData, resetData } = useResumeStore();
   const { theme, toggle } = useTheme();
   const [paying, setPaying] = useState(false);
-  const [showDownloadBanner, setShowDownloadBanner] = useState(false);
   const searchParams = useSearchParams();
 
-  // Show download banner after successful payment redirect
+  // Auto-trigger PDF export after successful payment redirect
   useEffect(() => {
     if (searchParams.get("paid") === "true") {
-      setShowDownloadBanner(true);
+      const name = data.personalInfo.fullName || "resume";
+      exportToPdf("resume-preview", name);
       const url = new URL(window.location.href);
       url.searchParams.delete("paid");
       window.history.replaceState({}, "", url.toString());
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleDownloadAfterPayment = () => {
-    const name = data.personalInfo.fullName || "resume";
-    exportToPdf("resume-preview", name);
-    setShowDownloadBanner(false);
-  };
 
   // Load Lemon Squeezy embed script once
   useEffect(() => {
@@ -148,17 +142,6 @@ export default function TopBar() {
 
   return (
     <>
-    {showDownloadBanner && (
-      <div className="bg-green-500 text-white text-sm px-4 py-2 flex items-center justify-between">
-        <span>Payment successful! Your resume is ready to download.</span>
-        <button
-          onClick={handleDownloadAfterPayment}
-          className="ml-4 bg-white text-green-600 font-semibold text-xs px-3 py-1 rounded hover:bg-green-50 transition"
-        >
-          Download PDF
-        </button>
-      </div>
-    )}
     <header className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 gap-4 sticky top-0 z-10">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 mr-2 hover:opacity-75 transition">
