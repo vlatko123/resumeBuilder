@@ -50,6 +50,7 @@ export default function TopBar() {
     script.id = "lemon-squeezy-script";
     script.src = "https://app.lemonsqueezy.com/js/lemon.js";
     script.defer = true;
+    script.onload = () => window.createLemonSqueezy?.();
     document.head.appendChild(script);
   }, []);
 
@@ -81,20 +82,26 @@ export default function TopBar() {
         },
       });
 
-      // Open checkout as overlay
-      window.LemonSqueezy?.Url?.Open?.(url);
+      // Open checkout as overlay, fallback to new tab if LS not initialized
+      if (window.LemonSqueezy?.Url?.Open) {
+        window.LemonSqueezy.Url.Open(url);
 
-      // Detect overlay close (cancel) via MutationObserver — LS has no close event
-      setTimeout(() => {
-        const observer = new MutationObserver(() => {
-          const lsFrame = document.querySelector('iframe[src*="lemonsqueezy.com"]');
-          if (!lsFrame) {
-            if (!paymentSucceeded) setPaying(false);
-            observer.disconnect();
-          }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-      }, 800);
+        // Detect overlay close (cancel) via MutationObserver — LS has no close event
+        setTimeout(() => {
+          const observer = new MutationObserver(() => {
+            const lsFrame = document.querySelector('iframe[src*="lemonsqueezy.com"]');
+            if (!lsFrame) {
+              if (!paymentSucceeded) setPaying(false);
+              observer.disconnect();
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        }, 800);
+      } else {
+        // Fallback: open in new tab
+        window.open(url, "_blank");
+        setPaying(false);
+      }
     } catch {
       alert("Something went wrong. Please try again.");
       setPaying(false);
