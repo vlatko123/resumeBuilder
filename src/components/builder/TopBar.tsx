@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { useResumeStore } from "@/store/resumeStore";
 import { TemplateId, MODERN_COLORS } from "@/types/resume";
 import Button from "@/components/ui/Button";
@@ -29,19 +28,7 @@ export default function TopBar() {
   const { data, setTemplate, setModernColor, importData, resetData } = useResumeStore();
   const { theme, toggle } = useTheme();
   const [paying, setPaying] = useState(false);
-  const searchParams = useSearchParams();
 
-  // Auto-trigger PDF export after successful payment redirect
-  useEffect(() => {
-    if (searchParams.get("paid") === "true") {
-      const name = data.personalInfo.fullName || "resume";
-      exportToPdf("resume-preview", name);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("paid");
-      window.history.replaceState({}, "", url.toString());
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Load Lemon Squeezy embed script once
   useEffect(() => {

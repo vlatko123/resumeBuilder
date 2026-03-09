@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import TopBar from "@/components/builder/TopBar";
 import BuilderSidebar from "@/components/builder/BuilderSidebar";
 import ResumePreview from "@/components/preview/ResumePreview";
@@ -10,9 +9,7 @@ export const metadata = {
 export default function BuilderPage() {
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
-      <Suspense fallback={null}>
-        <TopBar />
-      </Suspense>
+      <TopBar />
       <div className="flex flex-1 overflow-hidden">
         <BuilderSidebar />
         {/* Preview area */}
